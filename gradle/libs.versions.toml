@@ -33,11 +33,9 @@ androidx-room = {group = "androidx.room", name = "room-runtime", version.ref = "
 androidx-room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
 androidx-room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
 
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = {id = "com.google.dagger.hilt.android", version.ref = "hilt"}
 hilt-ksp = {id = "com.google.devtools.ksp", version.ref = "hilt-ksp"}
-#room-ksp = {id = "androidx.room.compiler", version.ref = "room"}

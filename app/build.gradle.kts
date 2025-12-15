@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias ( libs.plugins.hilt )
     alias ( libs.plugins.hilt.ksp )
-//    alias ( libs.plugins.room.ksp )
 }
 
 android {
