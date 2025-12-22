@@ -49,9 +49,13 @@ interface HabitDao {
     @Query("SELECT * FROM habits WHERE id = :habitId")
     suspend fun getHabitWithRecords(habitId: Long): HabitWithRecords?
 
+    /**
+     *  メイン画面用：全習慣とその履歴をまとめて取得
+     * 「ゆらぎグラフ」の描画には、過去数日分のRecordが必要になるためこれを使います
+     */
     @Transaction
     @Query("SELECT * FROM habits WHERE isActive = 1")
-    fun getHabitsWithRecords(): Flow<List<HabitWithRecords>>
+    fun getAllHabitsWithRecords(): Flow<List<HabitWithRecords>>
 
     // 特定の日付に達成済みの記録があるか確認する（YC重複防止などに利用）
     @Query("SELECT * FROM habit_records WHERE habitId = :habitId AND targetDate = :targetDate LIMIT 1")
