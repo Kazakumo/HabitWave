@@ -1,5 +1,6 @@
 package io.github.kazakumo.habitwave.data.repository
 
+import io.github.kazakumo.habitwave.domain.model.Habit
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
