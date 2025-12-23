@@ -59,7 +59,23 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
 
     private fun calculateStreak(records: List<HabitRecordEntity>): Int {
         if (records.isEmpty()) return 0
-        // ここでtargetDateを降順に並べて連続日数をカウントするロジックを実装
-        return records.size // いったんダミー
+        // 重複を排除し、日付を降順に並べる
+        val sortedDates =
+            records.map { LocalDate.parse(it.targetDate.toString(), dateFormatter) }.distinct()
+                .sortedDescending()
+        val today = LocalDate.now()
+        val yesterday = LocalDate.now().minusDays(1)
+
+        // 直近（今日または昨日）に記録があるかチェック
+        // どちらにも記録がなければストリークは途切れていると判断
+        val latestDate = sortedDates.first()
+        if (latestDate != today && latestDate != yesterday) return 0
+
+        // 連続日数をカウント
+        val streakCount = sortedDates.zipWithNext().takeWhile { (current, next) ->
+            // 現在の日付の一日前が次の要素の日付と一致する間だけ取り出す
+            current.minusDays(1) == next
+        }.size + 1 // ペア数 + 最初の要素分
+        return streakCount
     }
 }
