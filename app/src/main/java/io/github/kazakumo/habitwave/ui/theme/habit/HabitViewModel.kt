@@ -48,6 +48,12 @@ class HabitViewModel @Inject constructor(
             repository.addHabit(title, colorHex)
         }
     }
+    
+    fun updateHabit(habitId: Long, title: String, colorHex: String) {
+        viewModelScope.launch {
+            repository.updateHabit(habitId, title, colorHex)
+        }
+    }
 
     /**
      * 4. 習慣の削除

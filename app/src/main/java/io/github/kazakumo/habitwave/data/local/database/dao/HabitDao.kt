@@ -36,6 +36,9 @@ interface HabitDao {
 
     @Update
     suspend fun updateHabit(habit: HabitEntity)
+    
+    @Update
+    suspend fun updateHabitDetail(detail: HabitDetailEntity)
 
     // 読み取り操作
 
