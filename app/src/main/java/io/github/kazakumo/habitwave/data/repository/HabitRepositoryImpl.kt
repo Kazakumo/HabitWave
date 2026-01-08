@@ -53,6 +53,11 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
         }
     }
 
+    override suspend fun updateHabit(habitId: Long, newTitle: String, newColorHex: String) {
+        habitDao.updateHabit(HabitEntity(id = habitId, title = newTitle))
+        habitDao.updateHabitDetail(HabitDetailEntity(habitId = habitId, colorHex = newColorHex))
+    }
+
     override suspend fun deleteHabit(habitId: Long) {
         // 論理削除（isActive = false）の実装
     }

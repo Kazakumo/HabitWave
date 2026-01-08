@@ -14,6 +14,9 @@ interface HabitRepository {
     // チェックイン（今日または機能のリカバリ）
     suspend fun toggleCheckIn(habitId: Long, date: LocalDate)
 
+    // 習慣情報の更新
+    suspend fun updateHabit(habitId: Long, newTitle: String, newColorHex: String)
+
     // 習慣の削除
     suspend fun deleteHabit(habitId: Long)
 }
