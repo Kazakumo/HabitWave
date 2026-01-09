@@ -1,6 +1,5 @@
 package io.github.kazakumo.habitwave.ui.theme.habit
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.kazakumo.habitwave.domain.model.Habit
 import io.github.kazakumo.habitwave.ui.theme.habit.components.AddHabitDialog
+import io.github.kazakumo.habitwave.ui.theme.habit.components.HabitFormDialog
 import io.github.kazakumo.habitwave.ui.theme.habit.components.HabitItem
 import java.time.LocalDate
 
@@ -39,7 +40,8 @@ fun HabitScreen(
     val habits by viewModel.uiState.collectAsStateWithLifecycle()
 
     // ダイアログの表示管理用ステート
-    var showDialog by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(false) } // 新規用
+    var editingHabit by remember { mutableStateOf<Habit?>(null) } // 編集用
 
     Scaffold(
         topBar = {
@@ -53,7 +55,10 @@ fun HabitScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = {
+                    showAddDialog = true
+                    println("Debug: Button Clicked: ${showAddDialog}")
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
@@ -93,18 +98,37 @@ fun HabitScreen(
                                 id,
                                 LocalDate.now().minusDays(1)
                             )
-                        }
+                        },
+                        onDelete = { id ->
+                            viewModel.deleteHabit(id)
+
+                        },
+                        onEdit = { h ->
+                            editingHabit = h
+                            println("Debug: Button Clicked: ${editingHabit}")
+                        },
                     )
                 }
             }
         }
-
         // ダイアログ表示条件
-        if (showDialog) {
+        if (showAddDialog) {
             AddHabitDialog(
-                onDismiss = { showDialog = false },
-                onConfirm = { title ->
-                    viewModel.addHabit(title)
+                onDismiss = { showAddDialog = false },
+                onConfirm = { title, color ->
+                    viewModel.addHabit(title, color)
+                }
+            )
+        }
+
+        editingHabit?.let { habit ->
+            HabitFormDialog(
+                initialTitle = habit.title,
+                initialColor = habit.colorHex,
+                onDismiss = { editingHabit = null },
+                onConfirm = { title, color ->
+                    viewModel.updateHabit(habit.id, title, color)
+                    editingHabit = null
                 }
             )
         }
