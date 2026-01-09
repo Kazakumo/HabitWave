@@ -26,7 +26,7 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
                 Habit(
                     id = relation.habit.id,
                     title = relation.habit.title,
-                    colorHex = "#6200EE",
+                    colorHex = relation.detail?.colorHex ?: "6750A4",
                     isCompletedToday = records.any { it.targetDate.toString() == todayStr },
                     isCompletedYesterday = records.any { it.targetDate.toString() == yesterdayStr },
                     streakCount = calculateStreak(records) // ストリーク計算を分離
@@ -49,7 +49,7 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
         } else {
             // トグル動作：既に記録があれば削除（または未達成フラグを立てる）
             // 現状のEntity設計に合わせてDAOにdeleteRecord等の追加が必要
-//            habitDao.deleteHabit(existing)
+            // habitDao.deleteHabit(existing)
         }
     }
 
@@ -59,7 +59,7 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
     }
 
     override suspend fun deleteHabit(habitId: Long) {
-        // 論理削除（isActive = false）の実装
+        habitDao.deleteHabit(HabitEntity(id = habitId, title = ""))
     }
 
     private fun calculateStreak(records: List<HabitRecordEntity>): Int {
