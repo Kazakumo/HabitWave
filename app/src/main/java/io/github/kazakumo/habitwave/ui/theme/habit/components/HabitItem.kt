@@ -1,5 +1,10 @@
 package io.github.kazakumo.habitwave.ui.theme.habit.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +59,8 @@ fun HabitItem(
 
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val haptic = LocalHapticFeedback.current
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -89,7 +99,10 @@ fun HabitItem(
                 CheckButton(
                     label = "昨日",
                     isCompleted = habit.isCompletedYesterday,
-                    onClick = { onToggleYesterday(habit.id) },
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onToggleYesterday(habit.id)
+                    },
                     activeColor = Color.Gray
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -97,7 +110,10 @@ fun HabitItem(
                 CheckButton(
                     label = "今日",
                     isCompleted = habit.isCompletedToday,
-                    onClick = { onToggleToday(habit.id) },
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onToggleToday(habit.id)
+                    },
                     activeColor = MaterialTheme.colorScheme.primary
                 )
             }
@@ -164,15 +180,29 @@ fun CheckButton(
     onClick: () -> Unit,
     activeColor: Color,
 ) {
+
+
+    // 色のアニメーション設定
+    val animatedColor by animateColorAsState(
+        targetValue = if (isCompleted) activeColor else Color.LightGray,
+        animationSpec = tween(durationMillis = 300),
+        label = "ColorAnimation"
+    )
+
+    val scale by animateFloatAsState(
+        targetValue = if (isCompleted) 1.2f else 1.0f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "ScaleAnimation"
+    )
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        IconButton(onClick = onClick) {
+        IconButton(onClick = onClick, modifier = Modifier.scale(scale)) {
             Icon(
                 imageVector = if (isCompleted) Icons.Filled.CheckCircle else Icons.Outlined.CheckCircle,
-                contentDescription = label,
-                tint = if (isCompleted) activeColor else MaterialTheme.colorScheme.outline,
+                contentDescription = null,
+                tint = animatedColor,
                 modifier = Modifier.size(32.dp)
             )
         }
+        Text(text = label, style = MaterialTheme.typography.labelSmall)
     }
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.kazakumo.habitwave.domain.model.Habit
 import io.github.kazakumo.habitwave.ui.theme.habit.components.AddHabitDialog
+import io.github.kazakumo.habitwave.ui.theme.habit.components.EmptyHabitList
 import io.github.kazakumo.habitwave.ui.theme.habit.components.HabitFormDialog
 import io.github.kazakumo.habitwave.ui.theme.habit.components.HabitItem
 import java.time.LocalDate
@@ -73,11 +74,7 @@ fun HabitScreen(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "習慣を登録して、ゆらゆら始めよう。",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.outline
-                )
+                EmptyHabitList()
             }
         } else {
             LazyColumn(
