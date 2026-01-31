@@ -4,6 +4,7 @@ import io.github.kazakumo.habitwave.data.local.database.dao.HabitDao
 import io.github.kazakumo.habitwave.data.local.database.entities.HabitDetailEntity
 import io.github.kazakumo.habitwave.data.local.database.entities.HabitEntity
 import io.github.kazakumo.habitwave.data.local.database.entities.HabitRecordEntity
+import io.github.kazakumo.habitwave.data.util.toYyyyMmDd
 import io.github.kazakumo.habitwave.domain.model.Habit
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -17,21 +18,23 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
     override fun getHabits(): Flow<List<Habit>> {
         // DAOからRelationクラス（Entityの塊）を取得
         return habitDao.getAllHabitsWithRecords().map { relations ->
-            val todayStr = LocalDate.now().format(dateFormatter)
-            val yesterdayStr = LocalDate.now().minusDays(1).format(dateFormatter)
+            val today = LocalDate.now().toYyyyMmDd()
+            val yesterday = LocalDate.now().minusDays(1).toYyyyMmDd()
 
             relations.map { relation ->
                 val records = relation.records
+
                 // Entity -> Domain Modelへのマッピング
                 Habit(
                     id = relation.habit.id,
                     title = relation.habit.title,
                     colorHex = relation.detail?.colorHex ?: "6750A4",
-                    isCompletedToday = records.any { it.targetDate.toString() == todayStr },
-                    isCompletedYesterday = records.any { it.targetDate.toString() == yesterdayStr },
+                    isCompletedToday = records.any { it.targetDate == today },
+                    isCompletedYesterday = records.any { it.targetDate == yesterday },
                     streakCount = calculateStreak(records) // ストリーク計算を分離
                 )
             }
+                .sortedWith(compareBy<Habit> { it.isCompletedToday }.thenBy { it.id })
         }
     }
 
