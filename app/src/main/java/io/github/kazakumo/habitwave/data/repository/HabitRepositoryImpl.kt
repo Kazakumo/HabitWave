@@ -18,20 +18,27 @@ class HabitRepositoryImpl @Inject constructor(private val habitDao: HabitDao) : 
     override fun getHabits(): Flow<List<Habit>> {
         // DAOからRelationクラス（Entityの塊）を取得
         return habitDao.getAllHabitsWithRecords().map { relations ->
-            val today = LocalDate.now().toYyyyMmDd()
-            val yesterday = LocalDate.now().minusDays(1).toYyyyMmDd()
+            val todayDate = LocalDate.now()
+            val todayLong = todayDate.toYyyyMmDd()
+            val yesterdayLong = LocalDate.now().minusDays(1).toYyyyMmDd()
 
             relations.map { relation ->
                 val records = relation.records
+                val recordDates = records.map { it.targetDate }.toSet() // NOTE: 検索しやすくする
 
+                val history = (0..20).map { dayOffset ->
+                    val target = todayDate.minusDays(dayOffset.toLong()).toYyyyMmDd()
+                    recordDates.contains(target)
+                }.reversed() // 21日前～今日の順に並び替え
                 // Entity -> Domain Modelへのマッピング
                 Habit(
                     id = relation.habit.id,
                     title = relation.habit.title,
                     colorHex = relation.detail?.colorHex ?: "6750A4",
-                    isCompletedToday = records.any { it.targetDate == today },
-                    isCompletedYesterday = records.any { it.targetDate == yesterday },
-                    streakCount = calculateStreak(records) // ストリーク計算を分離
+                    isCompletedToday = records.any { it.targetDate == todayLong },
+                    isCompletedYesterday = records.any { it.targetDate == yesterdayLong },
+                    streakCount = calculateStreak(records), // ストリーク計算を分離
+                    recentHistory = history
                 )
             }
                 .sortedWith(compareBy<Habit> { it.isCompletedToday }.thenBy { it.id })
