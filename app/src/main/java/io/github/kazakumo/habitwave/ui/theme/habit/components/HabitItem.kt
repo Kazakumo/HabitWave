@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import io.github.kazakumo.habitwave.domain.model.Habit
 import androidx.core.graphics.toColorInt
 import io.github.kazakumo.habitwave.ui.theme.HabitWaveTheme
+import io.github.kazakumo.habitwave.ui.util.SoundManager
 
 @Composable
 fun HabitItem(
@@ -60,6 +62,7 @@ fun HabitItem(
     onToggleYesterday: (Long) -> Unit,
     onDelete: (Long) -> Unit,
     onEdit: (Habit) -> Unit,
+    soundManager: SoundManager,
     modifier: Modifier = Modifier
 ) {
 
@@ -118,7 +121,10 @@ fun HabitItem(
                         label = "昨日",
                         isCompleted = habit.isCompletedYesterday,
                         onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (!habit.isCompletedYesterday) {
+                                soundManager.playCompleteSound()
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
                             onToggleYesterday(habit.id)
                         },
                         activeColor = Color.Gray
@@ -129,7 +135,10 @@ fun HabitItem(
                         label = "今日",
                         isCompleted = habit.isCompletedToday,
                         onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            if (!habit.isCompletedToday) {
+                                soundManager.playCompleteSound()
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
                             onToggleToday(habit.id)
                         },
                         activeColor = MaterialTheme.colorScheme.primary
@@ -253,7 +262,8 @@ fun HabitItemPreview() {
                 onToggleToday = {},
                 onToggleYesterday = {},
                 onDelete = {},
-                onEdit = {}
+                onEdit = {},
+                soundManager = SoundManager(LocalContext.current),
             )
         }
     }

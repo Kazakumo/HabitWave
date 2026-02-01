@@ -104,6 +104,7 @@ fun HabitScreen(
                             editingHabit = h
                             println("Debug: Button Clicked: ${editingHabit}")
                         },
+                        soundManager = viewModel.soundManager,
                     )
                 }
             }

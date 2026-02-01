@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.kazakumo.habitwave.data.repository.HabitRepository
 import io.github.kazakumo.habitwave.domain.model.Habit
+import io.github.kazakumo.habitwave.ui.util.SoundManager
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import java.time.LocalDate
 
 @HiltViewModel
 class HabitViewModel @Inject constructor(
-    private val repository: HabitRepository
+    private val repository: HabitRepository,
+    val soundManager: SoundManager
 ) : ViewModel() {
     /**
      * 1. UI状態の公開
@@ -48,7 +50,7 @@ class HabitViewModel @Inject constructor(
             repository.addHabit(title, colorHex)
         }
     }
-    
+
     fun updateHabit(habitId: Long, title: String, colorHex: String) {
         viewModelScope.launch {
             repository.updateHabit(habitId, title, colorHex)
