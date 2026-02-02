@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HabitWave</string>
+    <string name="habit_wave_appwidget_description">習慣を写します</string>
 </resources>
