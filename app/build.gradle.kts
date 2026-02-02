@@ -31,6 +31,7 @@ android {
             )
         }
     }
+// NOTE: kotlin 2.0以上なのでcompose extensionは不要 https://qiita.com/outerlet/items/3879cf279f8943fdefee
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -56,6 +57,9 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
+    implementation(libs.androidx.glance.material)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.room)
     implementation(libs.androidx.room.ktx)
